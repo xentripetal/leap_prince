@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use heron::prelude::*;
 
 pub struct PlayerPlugin;
 
@@ -26,33 +26,21 @@ fn setup_player(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let rigid_body = RigidBodyBundle {
-        position: Vec2::new(8.0, 8.0).into(),
-        body_type: RigidBodyType::KinematicVelocityBased,
-        ..Default::default()
-    };
-
-    let collider = ColliderBundle {
-        shape: ColliderShape::cuboid(0.5, 0.5),
-        material: ColliderMaterial {
-            restitution: 0.7,
-            ..Default::default()
-        },
-        flags: ColliderFlags::from(ActiveEvents::CONTACT_EVENTS),
-        ..Default::default()
-    };
     let texture_handle = asset_server.load("player.png");
     let sprite_bundle = SpriteBundle {
         material: materials.add(texture_handle.into()),
-        transform: Transform::identity(),
+        transform: Transform::from_translation(Vec3::new(8.0, 8.0, 0.0)),
         ..Default::default()
     };
 
     commands
-        .spawn_bundle(sprite_bundle)
-        .insert_bundle(rigid_body)
-        .insert_bundle(collider)
-        .insert(RigidBodyPositionSync::Discrete)
+        .spawn()
+        //.spawn_bundle(sprite_bundle)
+        .insert(RigidBody::Dynamic)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(0.5, 0.5, 0.5),
+            border_radius: None,
+        })
         .insert(Player {
             state: PlayerState::Standing,
         });
@@ -64,12 +52,8 @@ fn setup_player(
 fn movement(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut RigidBodyVelocity, &mut Player)>,
-    mut collisions: EventReader<ContactEvent>,
+    mut query: Query<(&mut Velocity, &mut Player)>,
 ) {
-    for collision in collisions.iter() {
-        info!("{:?}", collision);
-    }
     for (mut velocity, mut player) in query.iter_mut() {
         let mut direction = Vec3::ZERO;
 
@@ -88,7 +72,5 @@ fn movement(
         if keyboard_input.pressed(KeyCode::S) {
             direction -= Vec3::new(0.0, 1.0, 0.0);
         }
-
-        velocity.linvel = (Vec2::new(direction.x, -9.8 * time.delta_seconds())).into();
     }
 }

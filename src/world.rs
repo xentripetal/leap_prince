@@ -1,12 +1,25 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy_inspector_egui::bevy_egui::egui::Grid;
+use bevy_inspector_egui::egui::Ui;
+use bevy_inspector_egui::{bevy_egui, Context, Inspectable, InspectableRegistry};
+use heron::prelude::*;
 
 pub struct WorldPlugin;
 
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_startup_system(setup_map.system());
+        app.add_startup_system(setup_map.system())
+            .add_system(update_maps.system());
+    }
+}
+
+fn update_maps(
+    changed_tiles: Query<(&TileParent), (With<Tile>, Or<(Changed<TilePos>, Changed<Tile>)>)>,
+    mut map_query: MapQuery,
+) {
+    for chunk in changed_tiles.iter() {
+        map_query.notify_chunk(chunk.chunk);
     }
 }
 
@@ -55,16 +68,10 @@ fn setup_map(
                 let tile_entity = layer_builder
                     .get_tile_entity(&mut commands, TilePos(x as u32, y as u32))
                     .unwrap();
-                let collider = ColliderBundle {
-                    shape: ColliderShape::cuboid(0.5, 0.5),
-                    position: Vec2::new(x as f32 + 0.5, y as f32 + 0.5).into(),
-                    ..Default::default()
-                };
-                commands
-                    .entity(tile_entity)
-                    .insert_bundle(collider)
-                    .insert(ColliderPositionSync::Discrete)
-                    .insert(ColliderDebugRender::with_id(0));
+                commands.entity(tile_entity).insert(CollisionShape::Cuboid {
+                    half_extends: Vec3::new(0.5, 0.5, 0.5),
+                    border_radius: None,
+                });
             }
         }
     }

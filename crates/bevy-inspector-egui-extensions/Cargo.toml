@@ -1,0 +1,14 @@
+[package]
+name = "bevy-inspector-egui-extensions"
+version = "0.6.1"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy_app = "0.5.0"
+bevy-inspector-egui = "0.6.1"
+bevy_ecs_tilemap = {git = "https://github.com/StarArawn/bevy_ecs_tilemap", rev = "989fd7dd91232b217135a8d9e3b3559d0ce02657", optional = true}
+
+[features]
+ecs_tilemap = ["bevy_ecs_tilemap"]
