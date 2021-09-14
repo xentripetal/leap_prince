@@ -14,6 +14,7 @@ bevy_ecs_tilemap = {git = "https://github.com/StarArawn/bevy_ecs_tilemap", rev =
 bevy-inspector-egui = {version= "0.6.1", features = ["rapier2d"]}
 rand = "0.8.4"
 bevy-inspector-egui-extensions = {path = "crates/bevy-inspector-egui-extensions", features=["ecs_tilemap"]}
+bevy_mod_loader = {path = "crates/bevy_mod_loader"}
 
 [build-dependencies]
 embed-resource = "1.6.3"

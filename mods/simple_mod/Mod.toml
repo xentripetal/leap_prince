@@ -1,0 +1,5 @@
+[mod]
+name = "simple_mod"
+version = "0.1.0"
+description = "A simple bevy mod"
+authors = ["Xentripetal"]

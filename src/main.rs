@@ -11,6 +11,7 @@ use bevy_inspector_egui::{InspectorPlugin, WorldInspectorPlugin};
 use bevy_inspector_egui_extensions::InspectorExtensionPlugin;
 use heron::{Gravity, PhysicsPlugin};
 use rand::{thread_rng, Rng};
+use bevy_mod_loader::ModLoaderPlugin;
 
 mod helpers;
 mod player;
@@ -35,6 +36,7 @@ fn main() {
         .add_plugin(PhysicsPlugin::default())
         .add_plugin(TilemapPlugin)
         .add_plugin(PlayerPlugin)
+        .add_plugin(ModLoaderPlugin::new())
         .add_plugin(WorldPlugin)
         .add_plugin(WorldInspectorPlugin::new())
         .add_plugin(InspectorExtensionPlugin)
